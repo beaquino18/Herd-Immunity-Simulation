@@ -5,12 +5,14 @@ from virus import Virus
 
 class Person(object):
     # Define a person. 
-    def __init__(self, _id, is_vaccinated, infection = None):
+    def __init__(self, _id: int, is_vaccinated, infection = None):
         # A person has an id, is_vaccinated and possibly an infection
         self._id = _id  # int
-        # TODO Define the other attributes of a person here
-        pass
+        self.is_vaccinated = is_vaccinated
+        self.infection = infection
+        self.is_alive = True
 
+    # Checks if a person survived an infection
     def did_survive_infection(self):
         # This method checks if a person survived an infection. 
         # TODO Only called if infection attribute is not None.
@@ -20,11 +22,12 @@ class Person(object):
         # Otherwise they have survived infection and they are now vaccinated. 
         # Set their properties to show this
         # TODO: The method Should return a Boolean showing if they survived.
-        pass
+        if self.infection != None:
+            random_value = random.uniform(0.0, 1.0)
 
 if __name__ == "__main__":
     # This section is incomplete finish it and use it to test your Person class
-    # TODO Define a vaccinated person and check their attributes
+    # TODO Define a vaccinated person and check their attributes - DONE
     vaccinated_person = Person(1, True)
     assert vaccinated_person._id == 1
     assert vaccinated_person.is_alive is True
@@ -33,16 +36,26 @@ if __name__ == "__main__":
 
     # Create an unvaccinated person and test their attributes
     unvaccinated_person = Person(2, False)
-    # TODO Test unvaccinated_person's attributes here...
+    # TODO Test unvaccinated_person's attributes here... - DONE
+    assert unvaccinated_person._id == 2
+    assert unvaccinated_person.is_alive is True
+    assert unvaccinated_person.is_vaccinated is False
+    assert unvaccinated_person.infection is None
+    
 
     # Test an infected person. An infected person has an infection/virus
     # Create a Virus object to give a Person object an infection
     virus = Virus("Dysentery", 0.7, 0.2)
     # Create a Person object and give them the virus infection
     infected_person = Person(3, False, virus)
-    # TODO: complete your own assert statements that test
+    # TODO: complete your own assert statements that test - DONE
     # the values of each attribute
     # assert ...
+    assert infected_person._id == 3
+    assert infected_person.is_alive is True
+    assert infected_person.is_vaccinated is False
+    assert infected_person.infection is virus
+    
 
     # You need to check the survival of an infected person. Since the chance
     # of survival is random you need to check a group of people. 

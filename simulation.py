@@ -19,7 +19,11 @@ class Simulation(object):
         # Use the _create_population() method to create the list and 
         # return it storing it in an attribute here. 
         # TODO: Call self._create_population() and pass in the correct parameters.
-        pass
+        self.virus = virus
+        self.pop_size = pop_size
+        vacc_percentage = vacc_percentage
+        initial_infected = initial_infected
+        self._create_population() = list()
 
     def _create_population(self):
         # TODO: Create a list of people (Person instances). This list 
