@@ -24,6 +24,13 @@ class Person(object):
         # TODO: The method Should return a Boolean showing if they survived.
         if self.infection != None:
             random_value = random.uniform(0.0, 1.0)
+            if random_value <= virus.mortality_rate:
+                self.is_alive = False
+                return False
+            else:
+                self.is_alive = True
+                self.is_vaccinated = True
+                return True
 
 if __name__ == "__main__":
     # This section is incomplete finish it and use it to test your Person class

@@ -8,7 +8,6 @@ class Virus(object):
         # TODO Define the other attributes of Virus
         
 
-
 # Test this class
 if __name__ == "__main__":
     # Test your virus class by making an instance and confirming 
