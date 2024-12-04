@@ -14,22 +14,15 @@ class Person(object):
 
     # Checks if a person survived an infection
     def did_survive_infection(self):
-        # This method checks if a person survived an infection. 
-        # TODO Only called if infection attribute is not None.
-        # Check generate a random number between 0.0 - 1.0
-        # If the number is less than the mortality rate of the 
-        # person's infection they have passed away. 
-        # Otherwise they have survived infection and they are now vaccinated. 
-        # Set their properties to show this
-        # TODO: The method Should return a Boolean showing if they survived.
         if self.infection != None:
             random_value = random.uniform(0.0, 1.0)
-            if random_value <= virus.mortality_rate:
+            if random_value <= self.infection.mortality_rate:
                 self.is_alive = False
                 return False
             else:
                 self.is_alive = True
                 self.is_vaccinated = True
+                self.infection = None
                 return True
 
 if __name__ == "__main__":
@@ -97,7 +90,7 @@ if __name__ == "__main__":
     # TODO If a person is_alive True add one to did_survive - DONE
     # TODO If a person is_alive False add one to did_not_survive - DONE
 
-    # TODO When the loop is complete print your results.
+    # TODO When the loop is complete print your results. - DONE
     # The results should roughly match the mortality rate of the virus
     # For example if the mortality rate is 0.2 rough 20% of the people 
     # should succumb. 
