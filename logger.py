@@ -74,5 +74,10 @@ class Logger(object):
                         Number of Fatalities: {number_of_new_fatalities}""")
 
     def log_time_step(self, time_step_number):
-        # 
-        pass
+        time_step_number = 0
+        
+        for time in time_step_number:
+            time_step_number += 1
+            
+        with open('simulation_log.txt', 'a') as log:
+            log.write(f"Time Step: {time_step_number}\n")

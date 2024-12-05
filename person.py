@@ -24,10 +24,12 @@ class Person(object):
                 self.is_vaccinated = True
                 self.infection = None
                 return True
+    
+
+    
 
 if __name__ == "__main__":
-    # This section is incomplete finish it and use it to test your Person class
-    # TODO Define a vaccinated person and check their attributes - DONE
+    # Test for a vaccinated person
     vaccinated_person = Person(1, True)
     assert vaccinated_person._id == 1
     assert vaccinated_person.is_alive is True
@@ -36,46 +38,30 @@ if __name__ == "__main__":
 
     # Create an unvaccinated person and test their attributes
     unvaccinated_person = Person(2, False)
-    # TODO Test unvaccinated_person's attributes here... - DONE
     assert unvaccinated_person._id == 2
     assert unvaccinated_person.is_alive is True
     assert unvaccinated_person.is_vaccinated is False
     assert unvaccinated_person.infection is None
-    
 
     # Test an infected person. An infected person has an infection/virus
-    # Create a Virus object to give a Person object an infection
     virus = Virus("Dysentery", 0.7, 0.2)
-    # Create a Person object and give them the virus infection
     infected_person = Person(3, False, virus)
-    # TODO: complete your own assert statements that test - DONE
-    # the values of each attribute
-    # assert ...
     assert infected_person._id == 3
     assert infected_person.is_alive is True
     assert infected_person.is_vaccinated is False
     assert infected_person.infection is virus
     
 
-    # You need to check the survival of an infected person. Since the chance
-    # of survival is random you need to check a group of people. 
-    # Create a list to hold 100 people. Use the loop below to make 100 people
+    # Test for did_survive_infection method
     people = []
     for i in range(0, 100):
-        # TODO Make a person with an infection - DONE
         infected_person = Person(4, False, virus)
-        # TODO Append the person to the people list - DONE
         people.append(infected_person)
         
-
-    # Now that you have a list of 100 people. Resolve whether the Person 
-    # survives the infection or not by looping over the people list. 
-
     did_survived = 0
     did_not_survive = 0
     
     for person in people:
-        # For each person call that person's did_survive_infection method
         survived = person.did_survive_infection()
         if survived == True:
             did_survived += 1
@@ -83,25 +69,55 @@ if __name__ == "__main__":
             did_not_survive += 1
             
     print(f"Number of people survived: {did_survived}\nNumber of people died: {did_not_survive}")
-    # Count the people that survived and did not survive: 
+    
+    # Test for valid attributes of a person
+    person = Person(10, False, None)
+    assert person._id == 10
+    assert person.is_vaccinated is False
+    assert person.infection is None
+    assert person.is_alive is True
+    
+    # Test when mortality rate is 100%
+    virus = Virus("Zombie Virus", 0.8, 1.0)
+    person = Person(1, False, virus)
+    
+    assert person.did_survive_infection() is False
+    assert person.is_alive is False
+    assert person.is_vaccinated is False
+    assert person.infection is virus
+    
+    # Test when person is infected twice
+    virus = Virus("Mild", 0.8, 0.2)
+    person = Person(3, False, virus)
+    
+    assert person.did_survive_infection() is True
+    assert person.is_vaccinated is True
+    assert person.infection is None
+    
+    new_virus = Virus("Deadly", 0.8, 0.8)
+    person.infection = new_virus
+    assert person.is_vaccinated is True
+    assert person.infection is new_virus
+    assert person.is_alive is True
+    
 
-
-    # TODO Loop over all of the people - DONE
-    # TODO If a person is_alive True add one to did_survive - DONE
-    # TODO If a person is_alive False add one to did_not_survive - DONE
-
-    # TODO When the loop is complete print your results. - DONE
-    # The results should roughly match the mortality rate of the virus
-    # For example if the mortality rate is 0.2 rough 20% of the people 
-    # should succumb. 
-
-    # Stretch challenge! 
-    # Check the infection rate of the virus by making a group of 
-    # unifected people. Loop over all of your people. 
-    # Generate a random number. If that number is less than the 
-    # infection rate of the virus that person is now infected. 
-    # Assign the virus to that person's infection attribute. 
-
-    # Now count the infected and uninfect people from this group of people. 
-    # The number of infectedf people should be roughly the same as the 
-    # infection rate of the virus.
+    # Stretch Challenge - test for knowing the infected and uninfected count of a certain group of people
+    uninfected_group = []
+    
+    for i in range(0, 100):
+        uninfected_person = Person(5, False)
+        uninfected_group.append(uninfected_person)
+    
+    infected_count = 0
+    uninfected_count = 0
+    
+    for people in uninfected_group:
+        random_infection_rate = random.uniform(0.0, 1.0)
+        if random_infection_rate < virus.repro_rate:
+            people.infection = virus
+            infected_count += 1
+        else:
+            uninfected_count += 1
+    
+    print(f"Number of people infected: {infected_count}\nNumber of people uninfected: {uninfected_count}")
+    

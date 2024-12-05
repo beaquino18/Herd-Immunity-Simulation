@@ -1,3 +1,4 @@
+import random
 import pytest
 from virus import Virus
 from person import Person
@@ -45,4 +46,57 @@ def test_survival_person():
     print(f"Number of people survived: {did_survived}\nNumber of people died: {did_not_survive}")
     
     assert did_survived + did_not_survive == 100
+
+
+def test_person_valid_attributes():
+    person = Person(10, False, None)
+    assert person._id == 10
+    assert person.is_vaccinated is False
+    assert person.infection is None
+    assert person.is_alive is True
+
+def test_person_always_dies_with_100_mortality():
+    virus = Virus("Zombie Virus", 0.8, 1.0)
+    person = Person(1, False, virus)
     
+    assert person.did_survive_infection() is False
+    assert person.is_alive is False
+    assert person.is_vaccinated is False
+    assert person.infection is virus
+
+def test_vaccinated_person_infected_twice():
+    virus = Virus("Mild", 0.8, 0.2)
+    person = Person(3, False, virus)
+    
+    #Person survives the infection and becomes vaccinated
+    assert person.did_survive_infection() is True
+    assert person.is_vaccinated is True
+    assert person.infection is None
+    
+    #Try to infect the person again
+    new_virus = Virus("Deadly", 0.8, 0.8)
+    person.infection = new_virus
+    assert person.is_vaccinated is True
+    assert person.infection is new_virus
+    assert person.is_alive is True
+    
+#Stretch challenge - test for infected and uninfected group
+def test_infected_uninfected_group():
+    virus = Virus("Wild", 0.7, 0.5)
+    
+    uninfected_group = []
+    
+    for i in range(0, 100):
+        uninfected_person = Person(5, False)
+        uninfected_group.append(uninfected_person)
+    
+    infected_count = 0
+    uninfected_count = 0
+    
+    for people in uninfected_group:
+        random_infection_rate = random.uniform(0.0, 1.0)
+        if random_infection_rate < virus.repro_rate:
+            people.infection = virus
+            infected_count += 1
+        else:
+            uninfected_count += 1

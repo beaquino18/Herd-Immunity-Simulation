@@ -10,15 +10,16 @@ class Simulation(object):
         # TODO: Create a Logger object and bind it to self.logger.
         # Remember to call the appropriate logger method in the corresponding parts of the simulation.
         
-        # TODO: Store the virus in an attribute
-        # TODO: Store pop_size in an attribute
-        # TODO: Store the vacc_percentage in a variable
-        # TODO: Store initial_infected in a variable
+        # TODO: Store the virus in an attribute - DONE
+        # TODO: Store pop_size in an attribute - DONE
+        # TODO: Store the vacc_percentage in a variable - DONE
+        # TODO: Store initial_infected in a variable - DONE
         # You need to store a list of people (Person instances)
         # Some of these people will be infected some will not. 
         # Use the _create_population() method to create the list and 
         # return it storing it in an attribute here. 
         # TODO: Call self._create_population() and pass in the correct parameters.
+        self.logger = Logger('simulation_log.txt')
         self.virus = virus
         self.pop_size = pop_size
         vacc_percentage = vacc_percentage
@@ -31,7 +32,28 @@ class Simulation(object):
         # Some of these people will be uninfected and some will be infected.
         # The number of infected people should be equal to the the initial_infected
         # TODO: Return the list of people
-        pass
+        population = []
+        
+        # Calculation for total number of people who are vaccinated
+        num_vaccinated = int(self.pop_size * self.vacc_percentage)
+        
+        #Add infected people in the population list
+        for i in range(self.initial_infected):
+            person = Person(i, False, self.virus)
+            population.append(person)
+        
+        remaining_uninfected = self.pop_size - self.initial_infected
+        
+        #Add vaccinated people in the population list
+        for i in range(num_vaccinated):
+            if self.initial_infected < self.pop_size:
+                person = Person(i, True)
+                population.append(person)
+                self.initial_infected += 1
+                remaining_uninfected -= 1
+                
+        #Add uninfected people in the population list
+        
 
     def _simulation_should_continue(self):
         # This method will return a booleanb indicating if the simulation 
