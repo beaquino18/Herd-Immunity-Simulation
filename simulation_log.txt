@@ -1,8 +1,9 @@
 === Simulation Log ===
-Created at: 2024-12-07 10:57:52.793548
+Created at: 2024-12-07 11:26:18.598061
 
-Step 1 - Interactions:
-Total Interactions: 100
-New Infections: 50
-Infection Rate: 50.00%
+Step 1 - Survival Outcomes:
+Population alive: 2
+Survivors: 1
+
+Fatalities: 1
 

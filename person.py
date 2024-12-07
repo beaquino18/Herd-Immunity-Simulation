@@ -12,7 +12,8 @@ class Person(object):
         self.infection = infection
         self.is_alive = True
 
-    # Checks if a person survived an infection
+
+    # Checks if a person survived an infection, and update the survivor/fatality count
     def did_survive_infection(self):
         if self.infection != None:
             random_value = random.uniform(0.0, 1.0)
@@ -26,7 +27,6 @@ class Person(object):
                 return True
     
 
-    
 
 if __name__ == "__main__":
     # Test for a vaccinated person

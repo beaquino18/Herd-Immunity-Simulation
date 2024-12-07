@@ -39,16 +39,25 @@ class Logger(object):
             )
             
     # Logs number of people survived with infection
-    def log_infection_survival(self, step_number, population_count, number_of_new_fatalities):
-        # TODO: Finish this method. If the person survives, did_die_from_infection
-        # should be False.  Otherwise, did_die_from_infection should be True.
-        # Append the results of the infection to the logfile
+    def log_infection_survival(self, step_number, population_count):
+        survivors_count = 0
+        fatalities_count = 0
+        
+        # Check survival for infected people
+        for person in population_count:
+            if person.infection is not None:
+                if person.did_survive_infection():
+                    survivors_count += 1
+                else:
+                    fatalities_count += 1
+                    
         living_count = sum(1 for person in population_count if person.is_alive)
         with open('simulation_log.txt', 'a') as log:
             log.write(
-                f"Step {step_number} - Interactions:\n"
+                f"Step {step_number} - Survival Outcomes:\n"
                 f"Population alive: {living_count}\n"
-                f"New Infections: {number_of_new_fatalities}\n\n"
+                f"Survivors: {survivors_count}\n\n"
+                f"Fatalities: {fatalities_count}\n\n"
             )
 
     # Logs time step

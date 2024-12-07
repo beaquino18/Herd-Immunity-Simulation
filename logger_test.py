@@ -32,7 +32,21 @@ def test_log_interactions_with_infections():
     assert "Infection Rate: 50.00%" in content
 
 def test_log_infection_survival():
-  pass
-
+  logger = Logger("simulation_log.txt")
+  virus = Virus("Ebola", 0.7, 0.2)
+  population = [
+    Person(1, False, virus),
+    Person(2, False, virus),
+    Person(3, True),
+  ]
+  logger.log_infection_survival(1, population)
+  
+  with open("simulation_log.txt", "r") as log:
+    content = log.read()
+    assert "Step 1 - Survival Outcomes:" in content
+    assert "Population alive:" in content
+    assert "Survivors:" in content
+    assert "Fatalities:" in content
+    
 def test_log_time_step():
   pass
