@@ -1,0 +1,8 @@
+=== Simulation Log ===
+Created at: 2024-12-07 10:57:52.793548
+
+Step 1 - Interactions:
+Total Interactions: 100
+New Infections: 50
+Infection Rate: 50.00%
+

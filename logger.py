@@ -19,8 +19,8 @@ class Logger(object):
                 f"Population size: {pop_size}\n"
                 f"% of Vaccinated: {vacc_percentage}\n"
                 f"Virus: {virus_name}\n"
-                f"Mortality Rate: {mortality_rate}\n"
-                f"Reproduction Rate: {basic_repro_num}\n\n"
+                f"Mortality Rate: {mortality_rate * 100}%\n"
+                f"Reproduction Rate: {basic_repro_num * 100}%\n\n"
             )
 
     # Log interactions
@@ -30,7 +30,7 @@ class Logger(object):
         else:
             infection_rate = 0
             
-        with open('sumulation_log.txt', 'a') as log:
+        with open('simulation_log.txt', 'a') as log:
             log.write(
                 f"Step {step_number} - Interactions:\n"
                 f"Total Interactions: {number_of_interactions}\n"
