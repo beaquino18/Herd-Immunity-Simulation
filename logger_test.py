@@ -12,11 +12,13 @@ def test_logger_initialization():
 
 def test_write_metadata():
   logger = Logger("simulation_log.txt")
-  logger.write_metadata(100, 0.5, "Ebola", 0.7, 0.2)
+  logger.write_metadata(100, 0.5, "Ebola", 0.7, 0.2, 10)
   with open("simulation_log.txt", "r") as log:
     content = log.read()
+    assert "--- HERD IMMUNITY SIMULATION ---" in content
     assert "Population size: 100" in content
-    assert "% of Vaccinated: 0.5" in content
+    assert "% of Initially Vaccinated: 50.0%" in content
+    assert "Initially Infected: 10" in content
     assert "Virus: Ebola" in content
     assert "Mortality Rate: 70.0%" in content
     assert "Reproduction Rate: 20.0%" in content

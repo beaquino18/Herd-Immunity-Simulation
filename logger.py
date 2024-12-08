@@ -4,38 +4,39 @@ from virus import Virus
 
 
 class Logger(object):
-    
     #Define logger class
     def __init__(self, simulation_log):
         self.simulation_log = simulation_log
-        with open('simulation_log.txt', 'w') as log:
-            log.write("=== Simulation Log ===\n")
-            log.write(f"Created at: {datetime.datetime.now()}\n\n")
+
 
     # Metadata information
-    def write_metadata(self, pop_size, vacc_percentage, virus_name, mortality_rate, basic_repro_num):
+    def write_metadata(self, pop_size, vacc_percentage, virus_name, mortality_rate, repro_rate, initial_infected):
         with open('simulation_log.txt', 'a') as log:
             log.write(
+                f"------- HERD IMMUNITY SIMULATION -------\n"
+                f"Created at: {datetime.datetime.now()}\n\n"
                 f"Population size: {pop_size}\n"
-                f"% of Vaccinated: {vacc_percentage}\n"
+                f"% of Initially Vaccinated: {vacc_percentage * 100}%\n"
+                f"Initially Infected: {initial_infected}%\n"
                 f"Virus: {virus_name}\n"
                 f"Mortality Rate: {mortality_rate * 100}%\n"
-                f"Reproduction Rate: {basic_repro_num * 100}%\n\n"
+                f"Reproduction Rate: {repro_rate * 100}%\n\n"
+                f"----------------------------------------------------\n\n"
             )
 
     # Log interactions
-    def log_interactions(self, step_number, number_of_interactions, number_of_new_infections):
-        if number_of_interactions > 0:
-            infection_rate = (number_of_new_infections / number_of_interactions) * 100
-        else:
-            infection_rate = 0
+    def log_interactions(self, time_step, population_alive, current_infected, new_infections, deaths, recoveries, total_interactions):
             
         with open('simulation_log.txt', 'a') as log:
             log.write(
-                f"Step {step_number} - Interactions:\n"
-                f"Total Interactions: {number_of_interactions}\n"
-                f"New Infections: {number_of_new_infections}\n"
-                f"Infection Rate: {infection_rate:.2f}%\n\n"
+                f"Time Step: {time_step}\n"
+                f"Population Status:\n"
+                f"- Currently Alive: {population_alive}\n"
+                f"- Currently Infected: {current_infected}\n"
+                f"- New Infections: {new_infections}\n"
+                f"- Deaths This Step: {deaths}\n"
+                f"- Recoveries This Step: {recoveries}\n"
+                f"- Total Interactions: {total_interactions}\n"
             )
             
     # Logs number of people survived with infection
@@ -56,7 +57,7 @@ class Logger(object):
             log.write(
                 f"Step {step_number} - Survival Outcomes:\n"
                 f"Population alive: {living_count}\n"
-                f"Survivors: {survivors_count}\n\n"
+                f"Survivors: {survivors_count}\n"
                 f"Fatalities: {fatalities_count}\n\n"
             )
 
@@ -64,3 +65,18 @@ class Logger(object):
     def log_time_step(self, time_step_number):
         with open('simulation_log.txt', 'a') as log:
             log.write(f"Time Step: {time_step_number}\n")
+            
+    def log_summary(self, total_steps, population, total_infections):
+        total_survivors = sum(1 for person in population if person.did_survive_infection())
+        total_fatalities = sum(1 for person in population if not person.is_alive)
+        
+        with open('simulation_log.txt', 'a') as log:
+            log.write(
+                f"\n----------------------------------------------------\n"
+                f"=== Simulation Summary ===\n"
+                f"Total Steps: {total_steps}\n"
+                f"Final Population alive: {sum(1 for p in population if p.is_alive)}\n"
+                f"Total Infections: {total_infections}\n"
+                f"Cumulative Survivors: {total_survivors}\n"
+                f"Cumulative Fatalities: {total_fatalities}\n"
+            )
