@@ -18,13 +18,16 @@ class Simulation(object):
         self.initial_infected = initial_infected
         self.population = self._create_population()
         self.newly_infected = []
-        self.total_infections = initial_infected  # Start with initial infected count
+        self.cumulative_infections = self.initial_infected 
+        self.cumulative_survivor = 0
+        self.cumulative_fatalities = 0
         self.total_interactions = 0
         self.current_alive = 0
         self.current_infected = 0
         self.time_step_counter = 0
 
     def _create_population(self):
+        """Creates population (a list of Person objects)"""
         population = []
         
         # Calculation for total number of people who are vaccinated
@@ -52,6 +55,7 @@ class Simulation(object):
         
 
     def _simulation_should_continue(self):
+        """Determines whether the simulation should continue."""
         living_count = 0
         vaccinated_count = 0
         
@@ -73,11 +77,9 @@ class Simulation(object):
         return True
 
     def run(self):
+        """Runs the simulation"""
         time_step_counter = 0
         should_continue = True
-        
-        self.total_infections = 0
-        self.total_interactions = 0
         
         # Initialize logger
         self.logger.write_metadata(
@@ -96,28 +98,34 @@ class Simulation(object):
             should_continue = self._simulation_should_continue()
                 
         #Log final interactions for last step
-        total_infected = len([person for person in self.population if person.infection is not None])
-        self.logger.log_summary(time_step_counter, self.population, total_infected)
+        self.logger.log_summary(time_step_counter, self.population, self.cumulative_infections, self.cumulative_survivor, self.cumulative_fatalities)
+
 
     def time_step(self):
+        """Simulates one time step in the simulation and logs interaction"""
         interactions = 0
-        new_infections = 0
+        new_infections = set()
         deaths_this_step = 0
         recovered_this_step = 0
         
+        # Get currently infected and alive people
         infected_people = [person for person in self.population if person.infection and person.is_alive]
         
-        # Loop through population list
-        for infected_person in infected_people:
-                for _ in range(100):
-                    possible_contacts = [p for p in self.population if p._id != infected_person._id and p.is_alive]
-                    if possible_contacts:
-                        random_person = random.choice(possible_contacts)
-                        interactions += 1
-                        
-                        if self.interaction(infected_person, random_person):
-                            new_infections += 1
+        # Loop through population list, check for interactions
+        if infected_people:
+            for infected_person in infected_people:
+                    for _ in range(100):
+                        possible_contacts = [p for p in self.population 
+                                                if p._id != infected_person._id 
+                                                and p.is_alive]
+                        if possible_contacts:
+                            random_person = random.choice(possible_contacts)
+                            interactions += 1
+                            
+                            if self.interaction(infected_person, random_person):
+                                new_infections.add(random_person._id)
         
+        # Process infections
         for person in self.population:
             if person.infection and person.is_alive:
                 survival_random = random.random()
@@ -133,18 +141,21 @@ class Simulation(object):
         self._infect_newly_infected()
         
         # Update current state
-        self.total_interactions += interactions
-        self.total_infections += new_infections
+        newly_infected = len(new_infections)
+        self.cumulative_infections += newly_infected
+        self.total_interactions = interactions
         self.current_alive = sum(1 for person in self.population if person.is_alive)
         self.current_infected = sum(1 for person in self.population if person.infection is not None)
         self.time_step_counter += 1
+        self.cumulative_survivor += recovered_this_step
+        self.cumulative_fatalities += deaths_this_step
         
-        # Log interactions
+        # Log the time step results
         self.logger.log_interactions(
             self.time_step_counter,
             self.current_alive,
             self.current_infected,
-            new_infections,
+            newly_infected,
             deaths_this_step,
             recovered_this_step,
             interactions
@@ -152,6 +163,7 @@ class Simulation(object):
         
 
     def interaction(self, infected_person, random_person):
+        """Handles interactions between two people"""
         assert infected_person.infection is not None
         assert infected_person.is_alive
         assert random_person.is_alive

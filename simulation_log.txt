@@ -1,9 +1,9 @@
 ------- HERD IMMUNITY SIMULATION -------
-Created at: 2024-12-08 01:10:23.542376
+Created at: 2024-12-08 12:39:03.259739
 
 Population size: 50
-% of Initially Vaccinated: 90.0%
-Initially Infected: 5%
+% of Initially Vaccinated: 60.0% or 30 people
+# of People Initially Infected: 10
 Virus: Ebola
 Mortality Rate: 70.0%
 Reproduction Rate: 25.0%
@@ -12,17 +12,28 @@ Reproduction Rate: 25.0%
 
 Time Step: 1
 Population Status:
-- Currently Alive: 49
+- Currently Alive: 46
+- Currently Infected: 10
+- New Infections: 10
+- Recoveries This Step: 6
+- Deaths This Step: 4
+- Total Interactions: 1000
+
+Time Step: 2
+Population Status:
+- Currently Alive: 43
 - Currently Infected: 0
 - New Infections: 0
-- Deaths This Step: 1
-- Recoveries This Step: 4
-- Total Interactions: 500
+- Recoveries This Step: 7
+- Deaths This Step: 3
+- Total Interactions: 1000
+
 
 ----------------------------------------------------
+
 === Simulation Summary ===
-Total Steps: 1
-Final Population alive: 49
-Total Infections: 0
-Cumulative Survivors: 0
-Cumulative Fatalities: 1
+Total Steps: 2
+Final Population alive: 43
+Total Infections: 20
+Cummulative Survivors: 13
+Cumulative Fatalities: 7
