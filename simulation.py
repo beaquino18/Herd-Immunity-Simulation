@@ -22,8 +22,8 @@ class Simulation(object):
         self.logger = Logger('simulation_log.txt')
         self.virus = virus
         self.pop_size = pop_size
-        vacc_percentage = vacc_percentage
-        initial_infected = initial_infected
+        self.vacc_percentage = vacc_percentage
+        self.initial_infected = initial_infected
         self._create_population() = list()
 
     def _create_population(self):
@@ -42,17 +42,22 @@ class Simulation(object):
             person = Person(i, False, self.virus)
             population.append(person)
         
-        remaining_uninfected = self.pop_size - self.initial_infected
+        person_current_id = self.initial_infected
         
         #Add vaccinated people in the population list
         for i in range(num_vaccinated):
-            if self.initial_infected < self.pop_size:
-                person = Person(i, True)
+            if len(population) < self.pop_size:
+                person = Person(person_current_id, True)
                 population.append(person)
-                self.initial_infected += 1
-                remaining_uninfected -= 1
+                person_current_id += 1
                 
-        #Add uninfected people in the population list
+        #Add remaining uninfected, unvaccinated people in the population list
+        while len(population) < self.pop_size:
+            person = Person(person_current_id, False)
+            population.append(person)
+            person_current_id += 1
+        
+        return population
         
 
     def _simulation_should_continue(self):
@@ -62,7 +67,32 @@ class Simulation(object):
         # or if all of the living people have been vaccinated. 
         # TODO: Loop over the list of people in the population. Return True
         # if the simulation should continue or False if not.
-        pass
+        
+        # Goal: return boolean if the simulation should continue
+        # Return false if all the people are dead in the population
+        #   or if all the living people have been vaccinate
+        # For all people in the self.pop_size, check whether each person is 
+        #   is_alive 
+        
+        living_count = 0
+        vaccinated_count = 0
+        
+        for people in self.pop_size:
+            if people.is_alive == True:
+                living_count += 1
+                if people.is_vaccinated == True:
+                    vaccinated_count += 1
+        
+        # If all people in self.pop_size are dead, stop simulation
+        if living_count == 0:
+            return False
+        
+        # If all people in self.pop_size are vaccincated, stop simulation
+        if vaccinated_count == self.pop_size:
+            return False
+        
+        # If the conditions aren't met, continue simuation
+        return True
 
     def run(self):
         # This method starts the simulation. It should track the number of 
@@ -78,11 +108,14 @@ class Simulation(object):
             # Call the _simulation_should_continue method to determine if 
             # the simulation should continue
             should_continue = self._simulation_should_continue()
-            pass
+            time_step_counter += 1
+            self.time_step()
+            
 
         # TODO: Write meta data to the logger. This should be starting 
         # statistics for the simulation. It should include the initial
         # population size and the virus. 
+        Logger.write_metadata(self.pop_size, self.vacc_percentage, virus.name, virus.repro_rate, virus.mortality_rate)
         
         # TODO: When the simulation completes you should conclude this with 
         # the logger. Send the final data to the logger. 
@@ -97,7 +130,12 @@ class Simulation(object):
         # have that person interact with 100 other living people 
         # Run interactions by calling the interaction method below. That method
         # takes the infected person and a random person
+        
+        
+        # Return 
         pass
+    
+        
 
     def interaction(self, infected_person, random_person):
         # TODO: Finish this method.

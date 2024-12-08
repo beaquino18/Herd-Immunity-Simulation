@@ -48,5 +48,3 @@ def test_log_infection_survival():
     assert "Survivors:" in content
     assert "Fatalities:" in content
     
-def test_log_time_step():
-  pass
