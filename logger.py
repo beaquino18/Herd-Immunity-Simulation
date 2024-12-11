@@ -23,7 +23,9 @@ class Logger(object):
                 f"----------------------------------------------------\n\n"
             )
 
-    def log_interactions(self, time_step, population_alive, current_infected, new_infections, deaths, recoveries, total_interactions):
+    def log_interactions(self, time_step, population_alive, current_infected, 
+                            new_infections, vaccinated_people, recoveries, deaths_this_step, 
+                            total_interactions):
         """Writes information about the interactions in the simulation."""
         with open('simulation_log.txt', 'a') as log:
             log.write(
@@ -33,20 +35,28 @@ class Logger(object):
                 f"- Currently Infected: {current_infected}\n"
                 f"- New Infections: {new_infections}\n"
                 f"- Recoveries This Step: {recoveries}\n"
-                f"- Deaths This Step: {deaths}\n"
+                f"- Number of Vaccinated People This Step (Initially Vaccinated + Recoveries): {vaccinated_people}\n"
+                f"- Deaths This Step: {deaths_this_step}\n"
                 f"- Total Interactions: {total_interactions}\n\n"
             )
             
             
-    def log_summary(self, total_steps, population, total_infections, total_survivors, total_fatalities):
+    def log_summary(self, total_steps, population, cumulative_infections, 
+                    cumulative_survivor, cumulative_fatalities, total_vaccinations, 
+                    total_interactions, interaction_vaccinations, interaction_death, reason):
         """Writes a summary of the simulation."""
         with open('simulation_log.txt', 'a') as log:
             log.write(
                 f"\n----------------------------------------------------\n\n"
                 f"=== Simulation Summary ===\n"
                 f"Total Steps: {total_steps}\n"
-                f"Final Population alive: {sum(1 for p in population if p.is_alive)}\n"
-                f"Total Infections: {total_infections}\n"
-                f"Cummulative Survivors: {total_survivors}\n"
-                f"Cumulative Fatalities: {total_fatalities}\n"
+                f"Final Population alive: {population}\n"
+                f"Total Infections: {cumulative_infections}\n"
+                f"Cummulative Survivors: {cumulative_survivor}\n"
+                f"Cumulative Fatalities: {cumulative_fatalities}\n"
+                f"Total Number of Vaccinations: {total_vaccinations}\n"
+                f"Total Number of Interactions: {total_interactions}\n"
+                f"Number of interactions resulted in vaccination: {interaction_vaccinations}\n"
+                f"Number of interactions resulted in death: {interaction_death}\n"
+                f"Why the simulation ended: {reason}\n"   
             )
