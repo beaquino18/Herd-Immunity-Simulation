@@ -1,58 +1,33 @@
 import random
-# random.seed(42)
+import pytest
 from virus import Virus
+from person import Person
 
 
-class Person(object):
-    # Define a person. 
-    def __init__(self, _id: int, is_vaccinated, infection = None):
-        # A person has an id, is_vaccinated and possibly an infection
-        self._id = _id  # int
-        self.is_vaccinated = is_vaccinated
-        self.infection = infection
-        self.is_alive = True
-
-
-    # Checks if a person survived an infection, and update the survivor/fatality count
-    def did_survive_infection(self):
-        if self.infection != None:
-            random_value = random.uniform(0.0, 1.0)
-            if random_value <= self.infection.mortality_rate:
-                self.is_alive = False
-                return False
-            else:
-                self.is_alive = True
-                self.is_vaccinated = True
-                self.infection = None
-                return True
-    
-
-
-if __name__ == "__main__":
-    # Test for a vaccinated person
+def test_vaccinated_person():
     vaccinated_person = Person(1, True)
     assert vaccinated_person._id == 1
     assert vaccinated_person.is_alive is True
     assert vaccinated_person.is_vaccinated is True
     assert vaccinated_person.infection is None
-
-    # Create an unvaccinated person and test their attributes
+    
+def test_unvaccinated_person():
     unvaccinated_person = Person(2, False)
     assert unvaccinated_person._id == 2
     assert unvaccinated_person.is_alive is True
     assert unvaccinated_person.is_vaccinated is False
     assert unvaccinated_person.infection is None
 
-    # Test an infected person. An infected person has an infection/virus
+def test_infected_person():
     virus = Virus("Dysentery", 0.7, 0.2)
     infected_person = Person(3, False, virus)
     assert infected_person._id == 3
     assert infected_person.is_alive is True
     assert infected_person.is_vaccinated is False
     assert infected_person.infection is virus
-    
 
-    # Test for did_survive_infection method
+def test_survival_person():  
+    virus = Virus("Covid", 0.7, 0.2)
     people = []
     for i in range(0, 100):
         infected_person = Person(4, False, virus)
@@ -70,14 +45,17 @@ if __name__ == "__main__":
             
     print(f"Number of people survived: {did_survived}\nNumber of people died: {did_not_survive}")
     
-    # Test for valid attributes of a person
+    assert did_survived + did_not_survive == 100
+
+
+def test_person_valid_attributes():
     person = Person(10, False, None)
     assert person._id == 10
     assert person.is_vaccinated is False
     assert person.infection is None
     assert person.is_alive is True
-    
-    # Test when mortality rate is 100%
+
+def test_person_always_dies_with_100_mortality():
     virus = Virus("Zombie Virus", 0.8, 1.0)
     person = Person(1, False, virus)
     
@@ -85,23 +63,27 @@ if __name__ == "__main__":
     assert person.is_alive is False
     assert person.is_vaccinated is False
     assert person.infection is virus
-    
-    # Test when person is infected twice
+
+def test_vaccinated_person_infected_twice():
     virus = Virus("Mild", 0.8, 0.2)
     person = Person(3, False, virus)
     
+    #Person survives the infection and becomes vaccinated
     assert person.did_survive_infection() is True
     assert person.is_vaccinated is True
     assert person.infection is None
     
+    #Try to infect the person again
     new_virus = Virus("Deadly", 0.8, 0.8)
     person.infection = new_virus
     assert person.is_vaccinated is True
     assert person.infection is new_virus
     assert person.is_alive is True
     
-
-    # Stretch Challenge - test for knowing the infected and uninfected count of a certain group of people
+#Stretch challenge - test for infected and uninfected group
+def test_infected_uninfected_group():
+    virus = Virus("Wild", 0.7, 0.5)
+    
     uninfected_group = []
     
     for i in range(0, 100):
@@ -118,6 +100,3 @@ if __name__ == "__main__":
             infected_count += 1
         else:
             uninfected_count += 1
-    
-    print(f"Number of people infected: {infected_count}\nNumber of people uninfected: {uninfected_count}")
-    
