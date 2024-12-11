@@ -18,13 +18,21 @@ class Simulation(object):
         self.initial_infected = initial_infected
         self.population = self._create_population()
         self.newly_infected = []
-        self.total_infections = initial_infected  # Start with initial infected count
+        self.cumulative_infections = self.initial_infected 
+        self.cumulative_survivor = 0
+        self.cumulative_fatalities = 0
         self.total_interactions = 0
         self.current_alive = 0
         self.current_infected = 0
         self.time_step_counter = 0
+        self.vaccinated_this_step = 0
+        self.total_vaccinations = int(self.pop_size * self.vacc_percentage)
+        self.interaction_vaccinations = 0
+        self.interaction_death = 0
+        self.reason = ""
 
     def _create_population(self):
+        """Creates population (a list of Person objects)"""
         population = []
         
         # Calculation for total number of people who are vaccinated
@@ -52,6 +60,7 @@ class Simulation(object):
         
 
     def _simulation_should_continue(self):
+        """Determines whether the simulation should continue."""
         living_count = 0
         vaccinated_count = 0
         
@@ -63,29 +72,29 @@ class Simulation(object):
         
         # If all people in self.pop_size are dead, stop simulation
         if living_count == 0:
+            self.reason = "All people are dead"
             return False
         
         # If all people in self.pop_size are vaccincated, stop simulation
         if vaccinated_count == living_count:
+            self.reason = "All people are vaccinated"
             return False
         
         # If the conditions aren't met, continue simuation
         return True
 
     def run(self):
+        """Runs the simulation"""
         time_step_counter = 0
         should_continue = True
-        
-        self.total_infections = 0
-        self.total_interactions = 0
         
         # Initialize logger
         self.logger.write_metadata(
             self.pop_size,
             self.vacc_percentage,
             self.virus.name,
-            self.virus.repro_rate,
             self.virus.mortality_rate,
+            self.virus.repro_rate,
             self.initial_infected
         )
 
@@ -96,28 +105,37 @@ class Simulation(object):
             should_continue = self._simulation_should_continue()
                 
         #Log final interactions for last step
-        total_infected = len([person for person in self.population if person.infection is not None])
-        self.logger.log_summary(time_step_counter, self.population, total_infected)
+        self.logger.log_summary(time_step_counter, len(self.population), self.cumulative_infections, 
+                                self.cumulative_survivor, self.cumulative_fatalities, 
+                                self.total_vaccinations, self.total_interactions,
+                                self.interaction_vaccinations, self.interaction_death, self.reason)
+
 
     def time_step(self):
+        """Simulates one time step in the simulation and logs interaction"""
         interactions = 0
-        new_infections = 0
+        new_infections = set()
         deaths_this_step = 0
         recovered_this_step = 0
         
+        # Get currently infected and alive people
         infected_people = [person for person in self.population if person.infection and person.is_alive]
         
-        # Loop through population list
-        for infected_person in infected_people:
-                for _ in range(100):
-                    possible_contacts = [p for p in self.population if p._id != infected_person._id and p.is_alive]
-                    if possible_contacts:
-                        random_person = random.choice(possible_contacts)
-                        interactions += 1
-                        
-                        if self.interaction(infected_person, random_person):
-                            new_infections += 1
+        # Loop through population list, check for interactions
+        if infected_people:
+            for infected_person in infected_people:
+                    for _ in range(100):
+                        possible_contacts = [p for p in self.population 
+                                                if p._id != infected_person._id 
+                                                and p.is_alive]
+                        if possible_contacts:
+                            random_person = random.choice(possible_contacts)
+                            interactions += 1
+                            
+                            if self.interaction(infected_person, random_person):
+                                new_infections.add(random_person._id)
         
+        # Process infections
         for person in self.population:
             if person.infection and person.is_alive:
                 survival_random = random.random()
@@ -125,33 +143,43 @@ class Simulation(object):
                     person.is_alive = False
                     deaths_this_step += 1
                     person.infection = None
+                    self.interaction_death += 1
                 else:
                     person.is_vaccinated = True
                     person.infection = None
                     recovered_this_step += 1
+                    self.interaction_vaccinations += 1
                     
         self._infect_newly_infected()
         
         # Update current state
+        newly_infected = len(new_infections)
+        self.cumulative_infections += newly_infected
         self.total_interactions += interactions
-        self.total_infections += new_infections
         self.current_alive = sum(1 for person in self.population if person.is_alive)
         self.current_infected = sum(1 for person in self.population if person.infection is not None)
         self.time_step_counter += 1
+        self.cumulative_survivor += recovered_this_step
+        self.cumulative_fatalities += deaths_this_step
+        self.population = [person for person in self.population if person.is_alive]
+        self.vaccinated_this_step = sum(1 for person in self.population if person.is_vaccinated)
+        self.total_vaccinations += recovered_this_step
         
-        # Log interactions
+        # Log the time step results
         self.logger.log_interactions(
             self.time_step_counter,
             self.current_alive,
             self.current_infected,
-            new_infections,
-            deaths_this_step,
+            newly_infected,
+            self.vaccinated_this_step,
             recovered_this_step,
+            deaths_this_step,
             interactions
         )
         
 
     def interaction(self, infected_person, random_person):
+        """Handles interactions between two people"""
         assert infected_person.infection is not None
         assert infected_person.is_alive
         assert random_person.is_alive

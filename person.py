@@ -4,7 +4,7 @@ from virus import Virus
 
 
 class Person(object):
-    # Define a person. 
+    """Define a person."""
     def __init__(self, _id: int, is_vaccinated, infection = None):
         # A person has an id, is_vaccinated and possibly an infection
         self._id = _id  # int
@@ -12,9 +12,8 @@ class Person(object):
         self.infection = infection
         self.is_alive = True
 
-
-    # Checks if a person survived an infection, and update the survivor/fatality count
     def did_survive_infection(self):
+        """Checks if a person survived an infection, and update the survivor/fatality count"""
         if self.infection != None:
             random_value = random.uniform(0.0, 1.0)
             if random_value <= self.infection.mortality_rate:
